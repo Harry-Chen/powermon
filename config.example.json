@@ -1,0 +1,12 @@
+{
+    "host": "influxdb",
+    "port": 8086,
+    "username": "admin",
+    "password": "admin",
+    "database": "pacman",
+    "read_program": "read_485",
+    "device": "/dev/ttyUSB0",
+    "amc_id": 1,
+    "adf_id": 13
+}
+
