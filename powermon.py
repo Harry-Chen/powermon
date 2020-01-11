@@ -43,6 +43,12 @@ def generate_body(table, tags, fields):
 def parse_amc_value(a, b):
     return a * pow(10, b - 3)
 
+def parse_int16(a):
+    a &= 0xffff
+    if a & 0x8000:
+        return - 0x10000 + a 
+    else:
+        return a
 
 def generate_amc_point(phase, current):
     tags = {
@@ -85,6 +91,9 @@ def get_from_amc():
 
 def read_adf_part(location, offset):
     values = [int(x, 16) for x in read_485(adf_id + offset, 0x033F, 35).strip().split()]
+    
+    for i in range(6, 18):
+        values[i] = parse_int16(values[i])
 
     points = []
 
@@ -99,7 +108,7 @@ def read_adf_part(location, offset):
     points.append(generate_adf_point(location, 'current', values[4] * 0.01, 'B'))
     points.append(generate_adf_point(location, 'current', values[5] * 0.01, 'C'))
     # active power (W)
-    points.append(generate_adf_point(location, 'active_power', values[7] + values[8] + values[9], 'total')) # workaround for overflow
+    points.append(generate_adf_point(location, 'active_power', values[6], 'total')) # workaround for overflow
     points.append(generate_adf_point(location, 'active_power', values[7], 'A'))
     points.append(generate_adf_point(location, 'active_power', values[8], 'B'))
     points.append(generate_adf_point(location, 'active_power', values[9], 'C'))
